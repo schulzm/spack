@@ -69,6 +69,8 @@ class Petsc(Package):
             description='Activates support for MUMPS (only parallel)')
     variant('superlu-dist', default=True,
             description='Activates support for SuperluDist (only parallel)')
+    variant('trilinos', default=False,
+            description='Activates support for Trilinos (only parallel)')
 
     # Virtual dependencies
     # Git repository needs sowing to build Fortran interface
@@ -97,7 +99,8 @@ class Petsc(Package):
     depends_on('superlu-dist@5.0.0:', when='@for-pflotran-0.1.0+superlu-dist+mpi')
     depends_on('mumps+mpi', when='+mumps+mpi')
     depends_on('scalapack', when='+mumps+mpi')
-
+    depends_on('trilinos@12.6.2:', when='@3.7.0:+trilinos+mpi')
+    
     def mpi_dependent_options(self):
         if '~mpi' in self.spec:
             compiler_opts = [
@@ -156,7 +159,7 @@ class Petsc(Package):
 
         # Activates library support if needed
         for library in ('metis', 'boost', 'hdf5', 'hypre', 'parmetis',
-                        'mumps', 'scalapack'):
+                        'mumps', 'scalapack', 'trilinos'):
             options.append(
                 '--with-{library}={value}'.format(
                     library=library, value=('1' if library in spec else '0'))
